@@ -1,0 +1,36 @@
+﻿<header class="topbar navbar navbar-dark bg-dark shadow-sm">
+    <div class="container-fluid d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center">
+            <button class="btn btn-dark d-md-none me-2" type="button" id="sidebarToggle" onclick="toggleSidebar()">
+                <i class="fa fa-bars"></i>
+            </button>
+            <h4 class="m-0 text-light">@ViewBag.Title</h4>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+            <div class="me-2 text-muted small d-none d-md-block">Signed in as <strong class="text-white ms-1">@User?.Identity?.Name</strong></div>
+
+            @if (User?.Identity?.IsAuthenticated ?? false)
+            {
+                <form method="post" action="@Url.Action("Logout","Account")" class="m-0">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-outline-light btn-sm">
+                        <i class="fa-solid fa-right-from-bracket"></i> Logout
+                    </button>
+                </form>
+            }
+            else
+            {
+                <a class="btn btn-outline-light btn-sm" href="@Url.Action("Login", "Account")">Login</a>
+            }
+        </div>
+    </div>
+</header>
+
+<script>
+    function toggleSidebar() {
+        const sb = document.querySelector('.sidebar');
+        if(!sb) return;
+        sb.style.display = sb.style.display === 'block' ? 'none' : 'block';
+    }
+</script>

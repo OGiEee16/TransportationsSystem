@@ -1,0 +1,97 @@
+﻿@{
+    var user = User?.Identity?.Name ?? "Guest";
+    var isAdmin = User.IsInRole("ADMIN");
+}
+
+<aside class="sidebar text-light">
+    <div class="sidebar-header p-3 d-flex align-items-center border-bottom border-secondary">
+        <div class="logo me-2">
+            <i class="fa-solid fa-bus fa-2x text-warning"></i>
+        </div>
+        <div>
+            <h5 class="m-0 fw-bold">Transportations</h5>
+            <small class="text-muted">@user</small>
+        </div>
+    </div>
+
+    <nav class="nav flex-column p-2 mt-3">
+        @* Normal User Menu *@
+        @if (!isAdmin)
+        {
+            <a class="nav-link text-light px-3 py-2 d-flex align-items-center rounded hover-dark"
+               href="@Url.Action("Create", "Booking")">
+                <i class="fa fa-plus-circle me-2 text-warning"></i> Book a Ride
+            </a>
+
+            <a class="nav-link text-light px-3 py-2 d-flex align-items-center rounded hover-dark"
+               href="@Url.Action("MyBookings", "Booking")">
+                <i class="fa fa-list me-2 text-warning"></i> My Bookings
+            </a>
+        }
+
+        @* Admin Menu *@
+        @if (isAdmin)
+        {
+            <div class="mt-4 px-3 text-uppercase text-muted small">Admin</div>
+
+            <a class="nav-link text-light px-3 py-2 d-flex align-items-center rounded hover-dark"
+               href="@Url.Action("Index", "Admin")">
+                <i class="fa fa-gauge me-2 text-warning"></i> Dashboard
+            </a>
+
+            <a class="nav-link text-light px-3 py-2 d-flex align-items-center rounded hover-dark"
+               href="@Url.Action("Bookings", "Admin")">
+                <i class="fa fa-table me-2 text-warning"></i> Manage Bookings
+            </a>
+        }
+    </nav>
+</aside>
+
+<style>
+    /* Sidebar Base */
+    .sidebar {
+        width: 240px;
+        background-color: #121212;
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        border-right: 1px solid rgba(255,255,255,0.05);
+        z-index: 1000;
+        overflow-y: auto;
+    }
+
+    .nav-link {
+        color: #f1f1f1;
+        font-size: 15px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s ease;
+    }
+
+    .hover-dark:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: #fff !important;
+    }
+
+    .nav-link i {
+        width: 22px;
+        text-align: center;
+    }
+
+    /* Sidebar header styling */
+    .sidebar-header {
+        background-color: #181818;
+    }
+
+    /* Mobile view */
+    media (max-width: 768px) {
+        .sidebar
+
+    {
+        display: none;
+    }
+
+    }
+</style>

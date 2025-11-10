@@ -1,0 +1,44 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Login";
+}
+
+<div class="row justify-content-center align-items-center" style="min-height:60vh;">
+    <div class="col-md-6 col-lg-4">
+        <div class="card card-dark p-4 shadow-sm">
+            <div class="text-center mb-3">
+                <i class="fa-solid fa-bus fa-3x text-white"></i>
+                <h3 class="mt-2">Transportations</h3>
+                <p class="text-muted small">Login to your account</p>
+            </div>
+
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert alert-danger">@ViewBag.Error</div>
+            }
+
+            <form asp-action="Login" asp-controller="Account" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="mb-3">
+                    <label class="form-label">Username</label>
+                    <input type="text" name="username" class="form-control" required />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <input type="password" name="password" class="form-control" required />
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary btn-lg">Login</button>
+                </div>
+            </form>
+
+            <div class="text-center mt-3 text-muted small">
+                Don't have an account?
+                <a href="@Url.Action("Register", "Account")" class="text-decoration-none" style="color:var(--accent)">Register</a>
+            </div>
+        </div>
+    </div>
+</div>
