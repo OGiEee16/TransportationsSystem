@@ -3,61 +3,494 @@
     ViewBag.Title = "Register";
 }
 
-<div class="row justify-content-center align-items-center" style="min-height:60vh;">
-    <div class="col-md-8 col-lg-6">
-        <div class="card card-dark p-4 shadow-sm">
-            <div class="text-center mb-3">
-                <i class="fa-solid fa-user-plus fa-2x"></i>
-                <h4>Create Account</h4>
-            </div>
+<style>
+    .auth-container {
+        min-height: calc(100vh - 140px);
+        display: flex;
+    align-items: center;
+  justify-content: center;
+        padding: 40px 20px;
+ background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%);
+    }
 
-            @if (ViewBag.Error != null)
+    .auth-card {
+        background: linear-gradient(135deg, rgba(17, 24, 39, 0.98) 0%, rgba(31, 41, 55, 0.98) 100%);
+border: 1px solid rgba(124, 58, 237, 0.2);
+      border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(124, 58, 237, 0.1);
+    backdrop-filter: blur(10px);
+        overflow: hidden;
+        transition: all 0.3s ease;
+        animation: slideUp 0.6s ease-out;
+    }
+
+    .auth-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 25px 70px rgba(0, 0, 0, 0.6), 0 0 60px rgba(124, 58, 237, 0.15);
+  }
+
+    @@keyframes slideUp {
+        from {
+opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+            transform: translateY(0);
+   }
+    }
+
+    .auth-header {
+        text-align: center;
+      margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+ }
+
+    .auth-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+     margin: 0 auto 20px;
+    animation: pulse 2s ease-in-out infinite;
+        box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+    }
+
+  @@keyframes pulse {
+     0%, 100% {
+       transform: scale(1);
+ box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+        }
+50% {
+ transform: scale(1.05);
+    box-shadow: 0 15px 40px rgba(16, 185, 129, 0.5);
+   }
+    }
+
+    .auth-icon i {
+  font-size: 2.5rem;
+        color: #fff;
+    }
+
+    .auth-title {
+      font-size: 1.8rem;
+        font-weight: 700;
+        color: #fff;
+     margin-bottom: 8px;
+    }
+
+    .auth-subtitle {
+        color: #9ca3af;
+        font-size: 0.95rem;
+    }
+
+ .form-group-enhanced {
+        position: relative;
+        margin-bottom: 20px;
+    }
+
+    .form-group-enhanced label {
+   font-weight: 500;
+        color: #d1d5db;
+        margin-bottom: 8px;
+      font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .form-group-enhanced label i {
+        color: #10b981;
+    }
+
+    .input-with-icon {
+        position: relative;
+    }
+
+    .input-with-icon input,
+    .input-with-icon select {
+        padding-left: 45px;
+        background: rgba(15, 23, 42, 0.8);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        color: #fff;
+    height: 50px;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+
+    .input-with-icon select {
+        cursor: pointer;
+    }
+
+    .input-with-icon input:focus,
+    .input-with-icon select:focus {
+        background: rgba(15, 23, 42, 0.95);
+        border-color: #10b981;
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1), 0 4px 12px rgba(16, 185, 129, 0.2);
+        transform: translateY(-2px);
+    }
+
+    .input-with-icon .input-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+    transform: translateY(-50%);
+ color: #10b981;
+        font-size: 1.1rem;
+    z-index: 1;
+  }
+
+    .btn-register {
+      height: 55px;
+ font-size: 1.1rem;
+        font-weight: 600;
+    background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+      border: none;
+        border-radius: 12px;
+        color: #fff;
+        transition: all 0.3s ease;
+  box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+        position: relative;
+  overflow: hidden;
+    }
+
+    .btn-register::before {
+     content: '';
+   position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s;
+    }
+
+    .btn-register:hover {
+        transform: translateY(-3px);
+   box-shadow: 0 15px 35px rgba(16, 185, 129, 0.5);
+    }
+
+    .btn-register:hover::before {
+     left: 100%;
+    }
+
+    .btn-register:active {
+        transform: translateY(-1px);
+    }
+
+    .auth-footer {
+        text-align: center;
+        margin-top: 25px;
+     padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      color: #9ca3af;
+    }
+
+    .auth-footer a {
+        color: #10b981;
+ text-decoration: none;
+        font-weight: 600;
+transition: all 0.3s ease;
+    }
+
+    .auth-footer a:hover {
+ color: #34d399;
+    text-decoration: underline;
+    }
+
+    .alert-enhanced {
+    border-radius: 12px;
+        border: none;
+        padding: 15px 20px;
+ margin-bottom: 25px;
+    display: flex;
+        align-items: center;
+      gap: 12px;
+        animation: slideDown 0.4s ease-out;
+ }
+
+    @@keyframes slideDown {
+from {
+     opacity: 0;
+      transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+    transform: translateY(0);
+        }
+    }
+
+    .alert-danger {
+ background: rgba(239, 68, 68, 0.15);
+        color: #fca5a5;
+      border-left: 4px solid #ef4444;
+    }
+
+    .role-card {
+        background: rgba(15, 23, 42, 0.6);
+        border: 2px solid rgba(16, 185, 129, 0.2);
+        border-radius: 12px;
+        padding: 15px;
+        margin-bottom: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .role-card:hover {
+     border-color: #10b981;
+        background: rgba(15, 23, 42, 0.8);
+    }
+
+    .role-card h6 {
+        color: #10b981;
+        margin-bottom: 8px;
+   font-weight: 600;
+    }
+
+  .role-card p {
+        color: #9ca3af;
+        font-size: 0.85rem;
+        margin: 0;
+    }
+
+    .role-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+      font-weight: 600;
+        margin-right: 8px;
+    }
+
+    .role-badge.user {
+        background: rgba(59, 130, 246, 0.2);
+        color: #60a5fa;
+    }
+
+    .role-badge.driver {
+        background: rgba(16, 185, 129, 0.2);
+        color: #34d399;
+    }
+
+    .role-badge.admin {
+   background: rgba(239, 68, 68, 0.2);
+        color: #f87171;
+    }
+
+    .password-strength {
+        margin-top: 8px;
+      font-size: 0.8rem;
+    }
+
+    .strength-bar {
+  height: 4px;
+     background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+        overflow: hidden;
+        margin-top: 5px;
+    }
+
+    .strength-bar-fill {
+     height: 100%;
+        transition: all 0.3s ease;
+        border-radius: 2px;
+    }
+</style>
+
+<div class="auth-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-7">
+             <div class="auth-card p-5">
+               <div class="auth-header">
+        <div class="auth-icon">
+     <i class="fas fa-user-plus"></i>
+           </div>
+     <h2 class="auth-title">Create Your Account</h2>
+      <p class="auth-subtitle">Join Gr-TranspoStation today</p>
+     </div>
+
+                @if (ViewBag.Error != null)
             {
-                <div class="alert alert-danger">@ViewBag.Error</div>
-            }
+         <div class="alert alert-danger alert-enhanced">
+  <i class="fas fa-exclamation-circle fa-lg"></i>
+             <span>@ViewBag.Error</span>
+    </div>
+               }
 
-            <form asp-action="Register" asp-controller="Account" method="post">
-                @Html.AntiForgeryToken()
+   <form asp-action="Register" asp-controller="Account" method="post" id="registerForm">
+      @Html.AntiForgeryToken()
 
-                <div class="row g-2">
-                    <div class="col-md-6 mb-2">
-                        <label class="form-label">Full Name</label>
-                        <input type="text" name="full_name" class="form-control" required />
-                    </div>
+  <div class="row g-3">
+    <div class="col-md-6">
+                 <div class="form-group-enhanced">
+     <label>
+           <i class="fas fa-id-card"></i>
+      Full Name
+    </label>
+        <div class="input-with-icon">
+             <i class="fas fa-id-card input-icon"></i>
+         <input type="text" name="full_name" class="form-control" placeholder="John Doe" required autofocus />
+              </div>
+            </div>
+          </div>
 
-                    <div class="col-md-6 mb-2">
-                        <label class="form-label">Username</label>
-                        <input type="text" name="username" class="form-control" required />
-                    </div>
+        <div class="col-md-6">
+       <div class="form-group-enhanced">
+         <label>
+    <i class="fas fa-user"></i>
+    Username
+                </label>
+       <div class="input-with-icon">
+          <i class="fas fa-user input-icon"></i>
+  <input type="text" name="username" class="form-control" placeholder="johndoe" required />
+ </div>
+  </div>
+        </div>
 
-                    <div class="col-12 mb-2">
-                        <label class="form-label">Email</label>
-                        <input type="email" name="email" class="form-control" required />
-                    </div>
+          <div class="col-12">
+<div class="form-group-enhanced">
+        <label>
+                <i class="fas fa-envelope"></i>
+           Email Address
+  </label>
+     <div class="input-with-icon">
+   <i class="fas fa-envelope input-icon"></i>
+   <input type="email" name="email" class="form-control" placeholder="john@example.com" required />
+           </div>
+    </div>
+   </div>
 
-                    <div class="col-md-6 mb-2">
-                        <label class="form-label">Password</label>
-                        <input type="password" name="password_hash" class="form-control" required />
-                    </div>
+      <div class="col-md-6">
+             <div class="form-group-enhanced">
+          <label>
+   <i class="fas fa-lock"></i>
+                 Password
+</label>
+          <div class="input-with-icon">
+            <i class="fas fa-lock input-icon"></i>
+               <input type="password" name="password_hash" class="form-control" placeholder="Enter password" required id="password" />
+    </div>
+          <div class="password-strength">
+    <div class="strength-bar">
+       <div class="strength-bar-fill" id="strengthBar"></div>
+             </div>
+         <small id="strengthText" class="text-muted"></small>
+</div>
+            </div>
+       </div>
 
-                    <div class="col-md-6 mb-2">
-                        <label class="form-label">Role</label>
-                        <select name="role" class="form-select" required>
-                            <option value="USER" selected>USER</option>
-                            <option value="ADMIN">ADMIN</option>
-                        </select>
-                    </div>
-                </div>
+         <div class="col-md-6">
+     <div class="form-group-enhanced">
+       <label>
+       <i class="fas fa-user-tag"></i>
+     Account Type
+</label>
+ <div class="input-with-icon">
+            <i class="fas fa-user-tag input-icon"></i>
+       <select name="role" class="form-select" required id="roleSelect">
+     <option value="USER" selected>Regular User</option>
+             <option value="DRIVER">Driver</option>
+        <option value="ADMIN">Administrator</option>
+       </select>
+               </div>
+      </div>
+  </div>
+        </div>
 
-                <div class="mt-3 d-grid">
-                    <button type="submit" class="btn btn-primary btn-lg">Register</button>
-                </div>
-            </form>
+            <!-- Role Information Cards -->
+               <div class="role-info mt-3 mb-3" id="roleInfo">
+       <div class="role-card" id="userCard">
+    <h6><i class="fas fa-user me-2"></i>Regular User</h6>
+      <p>Book transportation, manage your trips, and track your bookings.</p>
+          </div>
+        </div>
 
-            <div class="text-center mt-3 text-muted small">
-                Already have an account?
-                <a href="@Url.Action("Login", "Account")" class="text-decoration-none" style="color:var(--accent)">Login</a>
+          <div class="d-grid mt-4">
+           <button type="submit" class="btn btn-register">
+     <i class="fas fa-user-plus me-2"></i>Create Account
+  </button>
+       </div>
+               </form>
+
+          <div class="auth-footer">
+  <p class="mb-0">
+ Already have an account?
+   <a href="@Url.Action("Login", "Account")">
+ Sign In <i class="fas fa-arrow-right ms-1"></i>
+    </a>
+     </p>
+       </div>
+     </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    // Password strength indicator
+    const passwordInput = document.getElementById('password');
+    const strengthBar = document.getElementById('strengthBar');
+    const strengthText = document.getElementById('strengthText');
+
+    passwordInput?.addEventListener('input', function() {
+    const password = this.value;
+        let strength = 0;
+   
+        if (password.length >= 8) strength++;
+        if (password.match(/[a-z]/)) strength++;
+        if (password.match(/[A-Z]/)) strength++;
+        if (password.match(/[0-9]/)) strength++;
+        if (password.match(/[^a-zA-Z0-9]/)) strength++;
+
+   const percent = (strength / 5) * 100;
+        strengthBar.style.width = percent + '%';
+
+        if (strength <= 2) {
+        strengthBar.style.background = '#ef4444';
+            strengthText.textContent = 'Weak password';
+   strengthText.style.color = '#f87171';
+        } else if (strength <= 3) {
+       strengthBar.style.background = '#f59e0b';
+        strengthText.textContent = 'Medium password';
+        strengthText.style.color = '#fbbf24';
+     } else {
+       strengthBar.style.background = '#10b981';
+      strengthText.textContent = 'Strong password';
+strengthText.style.color = '#34d399';
+        }
+    });
+
+    // Role selection info
+    const roleSelect = document.getElementById('roleSelect');
+    const roleCards = {
+        USER: `
+            <div class="role-card" id="userCard">
+         <h6><i class="fas fa-user me-2"></i>Regular User</h6>
+  <p>Book transportation, manage your trips, and track your bookings.</p>
+            </div>
+        `,
+      DRIVER: `
+    <div class="role-card" id="driverCard">
+   <h6><i class="fas fa-id-card me-2 text-primary"></i>Driver</h6>
+     <p>Accept trip assignments, manage routes, and provide transportation services.</p>
+      </div>
+        `,
+        ADMIN: `
+          <div class="role-card" id="adminCard">
+        <h6><i class="fas fa-shield-alt me-2 text-danger"></i>Administrator</h6>
+      <p><strong class="text-warning">Full system access:</strong> Manage users, drivers, bookings, and system settings.</p>
+            </div>
+  `
+    };
+
+    roleSelect?.addEventListener('change', function() {
+        const roleInfo = document.getElementById('roleInfo');
+    if (roleInfo) {
+        roleInfo.innerHTML = roleCards[this.value];
+        }
+    });
+</script>

@@ -1,0 +1,194 @@
+@model IEnumerable<TransportationsSystem.Models.Booking>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "My Assigned Trips";
+}
+<div class="card card-dark p-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4>My Assigned Trips</h4>
+        <small class="text-muted">Welcome, @ViewBag.DriverName</small>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+     @TempData["Success"]
+     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    }
+  @if (TempData["Error"] != null)
+{
+ <div class="alert alert-danger alert-dismissible fade show" role="alert">
+       @TempData["Error"]
+       <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+  <i class="bi bi-info-circle"></i> You have no assigned trips yet.
+  </div>
+    }
+    else
+    {
+ <div class="table-responsive mt-3">
+       <table class="table table-dark-custom w-100">
+  <thead>
+    <tr>
+           <th>Trip #</th>
+         <th>Vehicle</th>
+      <th>Origin</th>
+   <th>Destination</th>
+    <th>Schedule</th>
+ <th>Passenger</th>
+     <th>Assignment Status</th>
+     <th>Actions</th>
+        </tr>
+     </thead>
+  <tbody>
+    @foreach (var b in Model)
+ {
+       var isUpcoming = b.schedule > DateTime.Now;
+    var isPast = b.schedule < DateTime.Now;
+         var isPending = b.driver_status == "PENDING_DRIVER_RESPONSE";
+      var isAccepted = b.driver_status == "ACCEPTED";
+      
+<tr class="@(isPending ? "table-warning" : isUpcoming && isAccepted ? "table-info" : isPast ? "table-secondary" : "")">
+       <td><strong>#@b.id</strong></td>
+<td>
+        <div>@b.vehicle_name</div>
+     <small class="text-muted">Capacity: @b.capacity</small>
+    </td>
+ <td>
+       <i class="bi bi-geo-alt-fill text-success"></i> @b.origin
+   </td>
+     <td>
+    <i class="bi bi-geo-alt-fill text-danger"></i> @b.destination
+         </td>
+       <td>
+   <div>@b.schedule.ToString("MMM dd, yyyy")</div>
+      <small class="text-muted">@b.schedule.ToString("hh:mm tt")</small>
+    </td>
+  <td>
+         @if (!string.IsNullOrEmpty(b.user_full_name))
+{
+       <span class="badge bg-secondary">@b.user_full_name</span>
+    }
+        else
+  {
+   <span class="badge bg-secondary">User #@b.user_id</span>
+ }
+   </td>
+   <td>
+  @if (b.driver_status == "PENDING_DRIVER_RESPONSE")
+        {
+     <span class="badge bg-warning text-dark">
+        <i class="bi bi-clock-history"></i> Pending Response
+  </span>
+     }
+   else if (b.driver_status == "ACCEPTED")
+   {
+     <span class="badge bg-success">
+    <i class="bi bi-check-circle"></i> Accepted
+     </span>
+     }
+  else
+      {
+   <span class="badge bg-secondary">Not Set</span>
+  }
+    </td>
+      <td>
+ @if (b.driver_status == "PENDING_DRIVER_RESPONSE")
+ {
+    <form method="post" action="@Url.Action("AcceptAssignment", "Driver")" style="display:inline;">
+  @Html.AntiForgeryToken()
+      <input type="hidden" name="bookingId" value="@b.id" />
+      <button type="submit" class="btn btn-sm btn-success me-1" 
+           onclick="return confirm('Accept this trip?');">
+      <i class="bi bi-check-circle"></i> Accept
+      </button>
+  </form>
+      <form method="post" action="@Url.Action("DeclineAssignment", "Driver")" style="display:inline;">
+    @Html.AntiForgeryToken()
+   <input type="hidden" name="bookingId" value="@b.id" />
+     <button type="submit" class="btn btn-sm btn-danger" 
+       onclick="return confirm('Decline this trip? It will be reassigned.');">
+   <i class="bi bi-x-circle"></i> Decline
+        </button>
+   </form>
+  }
+       else if (b.driver_status == "ACCEPTED")
+{
+      @if (isUpcoming)
+   {
+    <span class="badge bg-primary">
+     <i class="bi bi-hourglass-split"></i> Upcoming
+      </span>
+}
+     else if (isPast)
+  {
+       <span class="badge bg-secondary">
+    <i class="bi bi-check-all"></i> Completed
+  </span>
+ }
+   else
+       {
+      <span class="badge bg-success">
+  <i class="bi bi-calendar-check"></i> Today
+     </span>
+     }
+  }
+  else
+   {
+   <span class="text-muted">—</span>
+      }
+      </td>
+    </tr>
+    }
+      </tbody>
+       </table>
+        </div>
+
+        <div class="mt-3">
+   <div class="row">
+   <div class="col-md-3">
+     <div class="card bg-primary text-white p-3">
+       <h6>Total Assigned</h6>
+        <h3>@Model.Count()</h3>
+     </div>
+     </div>
+     <div class="col-md-3">
+      <div class="card bg-warning text-dark p-3">
+       <h6>Pending Response</h6>
+     <h3>@Model.Count(b => b.driver_status == "PENDING_DRIVER_RESPONSE")</h3>
+ </div>
+ </div>
+       <div class="col-md-3">
+       <div class="card bg-success text-white p-3">
+    <h6>Accepted</h6>
+       <h3>@Model.Count(b => b.driver_status == "ACCEPTED")</h3>
+    </div>
+   </div>
+      <div class="col-md-3">
+    <div class="card bg-info text-white p-3">
+      <h6>Upcoming</h6>
+    <h3>@Model.Count(b => b.driver_status == "ACCEPTED" && b.schedule > DateTime.Now)</h3>
+   </div>
+  </div>
+ </div>
+      </div>
+    }
+</div>
+
+<style>
+    .table-warning {
+     background-color: rgba(255, 193, 7, 0.2) !important;
+    }
+    .table-info {
+        background-color: rgba(13, 202, 240, 0.1) !important;
+    }
+  .table-secondary {
+ opacity: 0.6;
+}
+</style>

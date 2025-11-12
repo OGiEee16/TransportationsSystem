@@ -102,6 +102,30 @@ namespace TransportationsSystem.Migrations
 
                     b.ToTable("Users");
                 });
+
+            modelBuilder.Entity("TransportationsSystem.Models.Vehicle", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("id"));
+
+                    b.Property<int>("capacity")
+                        .HasColumnType("int");
+
+                    b.Property<string>("name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("type")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("id");
+
+                    b.ToTable("Vehicles");
+                });
 #pragma warning restore 612, 618
         }
     }

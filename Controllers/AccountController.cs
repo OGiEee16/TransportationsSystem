@@ -102,6 +102,8 @@ namespace TransportationsSystem.Controllers
             // ✅ Redirect based on role
             if (user.role == "ADMIN")
                 return RedirectToAction("Bookings", "Admin");
+            else if (user.role == "DRIVER")  // ✅ Driver redirect
+                return RedirectToAction("Index", "Driver");
             else
                 return RedirectToAction("Create", "Booking");
         }

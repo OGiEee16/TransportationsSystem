@@ -1,8 +1,553 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewBag.Title = "Home";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<style>
+  /* Hero Section */
+    .hero-section {
+        background: linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%);
+   border-radius: 20px;
+        padding: 80px 40px;
+  margin-bottom: 60px;
+   position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(124, 58, 237, 0.2);
+    }
+
+    .hero-section::before {
+    content: '';
+        position: absolute;
+        top: -50%;
+      right: -20%;
+      width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, rgba(124, 58, 237, 0.15) 0%, transparent 70%);
+        border-radius: 50%;
+  animation: float 6s ease-in-out infinite;
+    }
+
+    @@keyframes float {
+   0%, 100% {
+            transform: translateY(0px);
+ }
+     50% {
+            transform: translateY(-20px);
+ }
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .hero-title {
+        font-size: 3.5rem;
+     font-weight: 800;
+        background: linear-gradient(135deg, #fff 0%, #a855f7 100%);
+  -webkit-background-clip: text;
+   -webkit-text-fill-color: transparent;
+        background-clip: text;
+     margin-bottom: 20px;
+        line-height: 1.2;
+    }
+
+    .hero-subtitle {
+        font-size: 1.3rem;
+  color: #9ca3af;
+        margin-bottom: 40px;
+        max-width: 600px;
+    }
+
+    .hero-buttons .btn {
+        padding: 15px 40px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 12px;
+transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+   align-items: center;
+gap: 10px;
+    }
+
+    .btn-primary-hero {
+        background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+      border: none;
+ color: #fff;
+        box-shadow: 0 10px 25px rgba(124, 58, 237, 0.3);
+    }
+
+    .btn-primary-hero:hover {
+     transform: translateY(-3px);
+        box-shadow: 0 15px 35px rgba(124, 58, 237, 0.5);
+        color: #fff;
+    }
+
+    .btn-outline-hero {
+        background: rgba(255, 255, 255, 0.05);
+   border: 2px solid rgba(124, 58, 237, 0.5);
+        color: #a855f7;
+    }
+
+    .btn-outline-hero:hover {
+        background: rgba(124, 58, 237, 0.1);
+        border-color: #7c3aed;
+        transform: translateY(-3px);
+        color: #a855f7;
+    }
+
+    /* Features Section */
+    .features-section {
+margin-bottom: 60px;
+    }
+
+    .section-title {
+        text-align: center;
+        margin-bottom: 50px;
+    }
+
+    .section-title h2 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 15px;
+    }
+
+    .section-title p {
+        color: #9ca3af;
+        font-size: 1.1rem;
+    }
+
+    .feature-card {
+    background: linear-gradient(135deg, rgba(17, 24, 39, 0.95) 0%, rgba(31, 41, 55, 0.95) 100%);
+   border: 1px solid rgba(124, 58, 237, 0.2);
+        border-radius: 16px;
+        padding: 35px;
+        height: 100%;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .feature-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+     left: 0;
+        right: 0;
+        height: 4px;
+      background: linear-gradient(90deg, #7c3aed 0%, #a855f7 100%);
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+    }
+
+    .feature-card:hover {
+    transform: translateY(-10px);
+        border-color: #7c3aed;
+        box-shadow: 0 15px 40px rgba(124, 58, 237, 0.3);
+    }
+
+  .feature-card:hover::before {
+        transform: scaleX(1);
+    }
+
+    .feature-icon {
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(135deg, rgba(124, 58, 237, 0.2) 0%, rgba(168, 85, 247, 0.2) 100%);
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+  justify-content: center;
+        margin-bottom: 25px;
+   transition: all 0.3s ease;
+    }
+
+    .feature-card:hover .feature-icon {
+        transform: scale(1.1) rotate(5deg);
+     background: linear-gradient(135deg, rgba(124, 58, 237, 0.3) 0%, rgba(168, 85, 247, 0.3) 100%);
+    }
+
+    .feature-icon i {
+        font-size: 2rem;
+    color: #a855f7;
+    }
+
+    .feature-card h4 {
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 15px;
+    }
+
+    .feature-card p {
+        color: #9ca3af;
+   line-height: 1.7;
+ margin: 0;
+    }
+
+    /* Stats Section */
+    .stats-section {
+        background: linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%);
+   border-radius: 20px;
+    padding: 60px 40px;
+        margin-bottom: 60px;
+        border: 1px solid rgba(124, 58, 237, 0.2);
+    }
+
+    .stat-card {
+        text-align: center;
+        padding: 20px;
+}
+
+    .stat-number {
+        font-size: 3rem;
+  font-weight: 800;
+    background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+        -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 10px;
+        display: block;
+    }
+
+    .stat-label {
+        color: #9ca3af;
+        font-size: 1.1rem;
+        font-weight: 500;
+    }
+
+    /* How It Works Section */
+    .how-it-works {
+        margin-bottom: 60px;
+    }
+
+    .step-card {
+    text-align: center;
+        padding: 30px;
+        position: relative;
+    }
+
+    .step-number {
+        width: 60px;
+        height: 60px;
+   background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+  border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 25px;
+        font-size: 1.5rem;
+        font-weight: 700;
+  color: #fff;
+        box-shadow: 0 10px 25px rgba(124, 58, 237, 0.4);
+        position: relative;
+  z-index: 1;
+    }
+
+    .step-card::after {
+        content: '';
+position: absolute;
+   top: 30px;
+   left: 50%;
+        width: 100%;
+        height: 2px;
+  background: linear-gradient(90deg, rgba(124, 58, 237, 0.3) 0%, rgba(124, 58, 237, 0.3) 100%);
+        z-index: 0;
+    }
+
+    .step-card:last-child::after {
+        display: none;
+    }
+
+    .step-card h5 {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 15px;
+    }
+
+    .step-card p {
+     color: #9ca3af;
+      margin: 0;
+    }
+
+    /* CTA Section */
+.cta-section {
+        background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+border-radius: 20px;
+        padding: 60px 40px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .cta-section::before {
+     content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+     width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+        animation: rotate 20s linear infinite;
+    }
+
+    @@keyframes rotate {
+        from {
+            transform: rotate(0deg);
+        }
+  to {
+transform: rotate(360deg);
+        }
+    }
+
+    .cta-content {
+     position: relative;
+        z-index: 1;
+    }
+
+    .cta-section h2 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 20px;
+    }
+
+    .cta-section p {
+        font-size: 1.2rem;
+        color: rgba(255, 255, 255, 0.9);
+margin-bottom: 40px;
+    }
+
+    .btn-cta {
+        background: #fff;
+        color: #7c3aed;
+        padding: 15px 40px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 12px;
+        border: none;
+        transition: all 0.3s ease;
+  text-decoration: none;
+        display: inline-flex;
+align-items: center;
+        gap: 10px;
+    }
+
+    .btn-cta:hover {
+  transform: translateY(-3px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+    color: #7c3aed;
+    }
+
+    @@media (max-width: 768px) {
+    .hero-title {
+   font-size: 2.5rem;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.1rem;
+     }
+
+        .section-title h2 {
+     font-size: 2rem;
+        }
+
+ .stat-number {
+         font-size: 2rem;
+      }
+    }
+</style>
+
+<!-- Hero Section -->
+<div class="hero-section">
+  <div class="hero-content text-center">
+    <h1 class="hero-title">Your Journey Starts Here</h1>
+        <p class="hero-subtitle mx-auto">
+  Experience seamless transportation booking with Gr-TranspoStation. 
+       Book your ride, track your trips, and travel with confidence.
+    </p>
+        <div class="hero-buttons">
+     @if (User?.Identity?.IsAuthenticated ?? false)
+            {
+          <a href="@Url.Action("Create", "Booking")" class="btn btn-primary-hero">
+   <i class="fas fa-calendar-plus"></i>
+Book a Trip
+             </a>
+     <a href="@Url.Action("MyBookings", "Booking")" class="btn btn-outline-hero">
+       <i class="fas fa-list"></i>
+           My Bookings
+     </a>
+     }
+    else
+            {
+       <a href="@Url.Action("Register", "Account")" class="btn btn-primary-hero">
+         <i class="fas fa-user-plus"></i>
+Get Started
+  </a>
+    <a href="@Url.Action("Login", "Account")" class="btn btn-outline-hero">
+    <i class="fas fa-sign-in-alt"></i>
+   Sign In
+                </a>
+         }
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="features-section">
+    <div class="section-title">
+        <h2>Why Choose Us?</h2>
+ <p>Discover the benefits of our transportation system</p>
+    </div>
+    
+    <div class="row g-4">
+        <div class="col-md-4">
+ <div class="feature-card">
+      <div class="feature-icon">
+     <i class="fas fa-clock"></i>
+    </div>
+     <h4>24/7 Availability</h4>
+      <p>Book your transportation anytime, anywhere. Our system is always ready to serve you.</p>
+          </div>
+        </div>
+        
+    <div class="col-md-4">
+            <div class="feature-card">
+       <div class="feature-icon">
+         <i class="fas fa-shield-alt"></i>
+         </div>
+     <h4>Safe & Secure</h4>
+                <p>Travel with peace of mind. All our drivers are verified and vehicles are regularly maintained.</p>
+    </div>
+    </div>
+ 
+        <div class="col-md-4">
+        <div class="feature-card">
+                <div class="feature-icon">
+<i class="fas fa-dollar-sign"></i>
+   </div>
+                <h4>Affordable Rates</h4>
+                <p>Enjoy competitive pricing with no hidden fees. Transparent pricing for every journey.</p>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+       <div class="feature-card">
+   <div class="feature-icon">
+        <i class="fas fa-mobile-alt"></i>
+            </div>
+  <h4>Easy Booking</h4>
+         <p>Simple and intuitive booking process. Reserve your ride in just a few clicks.</p>
+      </div>
+        </div>
+     
+        <div class="col-md-4">
+            <div class="feature-card">
+          <div class="feature-icon">
+         <i class="fas fa-map-marked-alt"></i>
+  </div>
+     <h4>Real-Time Tracking</h4>
+     <p>Track your bookings and stay informed about your trip status in real-time.</p>
+            </div>
+        </div>
+  
+        <div class="col-md-4">
+            <div class="feature-card">
+       <div class="feature-icon">
+<i class="fas fa-headset"></i>
+                </div>
+                <h4>24/7 Support</h4>
+             <p>Our support team is always available to help with any questions or concerns.</p>
+            </div>
+      </div>
+  </div>
+</div>
+
+<!-- Stats Section -->
+<div class="stats-section">
+    <div class="row">
+   <div class="col-md-3 col-6">
+            <div class="stat-card">
+    <span class="stat-number">1000+</span>
+          <div class="stat-label">Happy Customers</div>
+    </div>
+        </div>
+        <div class="col-md-3 col-6">
+      <div class="stat-card">
+      <span class="stat-number">500+</span>
+       <div class="stat-label">Trips Completed</div>
+            </div>
+        </div>
+      <div class="col-md-3 col-6">
+            <div class="stat-card">
+                <span class="stat-number">50+</span>
+       <div class="stat-label">Verified Drivers</div>
+   </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="stat-card">
+    <span class="stat-number">24/7</span>
+   <div class="stat-label">Service Available</div>
+   </div>
+        </div>
+    </div>
+</div>
+
+<!-- How It Works Section -->
+<div class="how-it-works">
+    <div class="section-title">
+        <h2>How It Works</h2>
+        <p>Book your ride in three simple steps</p>
+    </div>
+    
+    <div class="row">
+      <div class="col-md-4">
+  <div class="step-card">
+   <div class="step-number">1</div>
+              <h5>Create Account</h5>
+     <p>Sign up in seconds and create your profile to get started with our platform.</p>
+            </div>
+        </div>
+  
+   <div class="col-md-4">
+            <div class="step-card">
+                <div class="step-number">2</div>
+         <h5>Book Your Trip</h5>
+    <p>Select your destination, date, and vehicle type. Confirm your booking with one click.</p>
+     </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="step-card">
+      <div class="step-number">3</div>
+    <h5>Enjoy Your Ride</h5>
+       <p>Relax and enjoy your journey. Track your trip and rate your experience.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CTA Section -->
+<div class="cta-section">
+  <div class="cta-content">
+    <h2>Ready to Start Your Journey?</h2>
+        <p>Join thousands of satisfied customers and experience hassle-free transportation today!</p>
+        @if (User?.Identity?.IsAuthenticated ?? false)
+ {
+         <a href="@Url.Action("Create", "Booking")" class="btn btn-cta">
+           <i class="fas fa-rocket"></i>
+  Book Your First Trip
+            </a>
+      }
+  else
+     {
+        <a href="@Url.Action("Register", "Account")" class="btn btn-cta">
+ <i class="fas fa-rocket"></i>
+                Join Now - It's Free!
+      </a>
+        }
+    </div>
 </div>

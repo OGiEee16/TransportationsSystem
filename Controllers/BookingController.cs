@@ -61,12 +61,13 @@ namespace TransportationsSystem.Controllers
             {
                 user_id = user.id,
                 vehicle_id = vehicleId,
-                vehicle_name = vehicle.name,   // ✅ new line
-                capacity = vehicle.capacity,   // ✅ new line
+                vehicle_name = vehicle.name,
+                capacity = vehicle.capacity,
                 origin = origin,
                 destination = destination,
                 schedule = scheduleDt,
-                status = "PENDING"
+                status = "PENDING",
+                created_at = DateTime.Now  // ✅ Set created_at timestamp
             };
 
 
@@ -83,6 +84,28 @@ namespace TransportationsSystem.Controllers
             if (user == null) return RedirectToAction("Login", "Account");
             var bookings = await _db.GetBookingsByUserAsync(user.id);
             return View(bookings);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Cancel(int bookingId)
+        {
+            var username = User.Identity?.Name;
+            var user = await _db.GetUserByUsernameAsync(username);
+            if (user == null) return RedirectToAction("Login", "Account");
+
+            var success = await _db.CancelBookingAsync(bookingId, user.id);
+          
+            if (success)
+            {
+                TempData["Success"] = "Booking cancelled successfully.";
+            }
+            else
+            {
+                TempData["Error"] = "Unable to cancel booking. Only pending bookings can be cancelled.";
+            }
+
+            return RedirectToAction("MyBookings");
         }
     }
 }

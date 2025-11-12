@@ -1,21 +1,151 @@
-﻿@{
+﻿@model Dictionary<string, int>
+@{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewBag.Title = "Admin Dashboard";
 }
-<div class="row">
-    <div class="col-md-6">
-        <div class="card card-dark p-3 mb-3">
-            <h5>Overview</h5>
-            <p class="text-muted">Quick summary of bookings, users, and capacity (add stats via controller).</p>
+
+<div class="row mb-4">
+    <div class="col-12">
+     <h3 class="mb-3">
+  <i class="fas fa-chart-line me-2"></i>Dashboard Overview
+        </h3>
+ <p class="text-muted">Real-time statistics and system overview</p>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row g-3 mb-4">
+    <!-- Total Bookings -->
+<div class="col-md-4">
+ <div class="card card-dark p-4 h-100">
+       <div class="d-flex justify-content-between align-items-center">
+    <div>
+         <h6 class="text-muted mb-2">Total Bookings</h6>
+      <h2 class="mb-0">@(Model?.ContainsKey("TotalBookings") == true ? Model["TotalBookings"] : 0)</h2>
+     </div>
+  <div class="text-warning" style="font-size: 3rem; opacity: 0.3;">
+        <i class="fas fa-calendar-alt"></i>
+   </div>
+  </div>
+ </div>
+    </div>
+
+ <!-- Pending Bookings -->
+    <div class="col-md-4">
+        <div class="card card-dark p-4 h-100">
+       <div class="d-flex justify-content-between align-items-center">
+         <div>
+      <h6 class="text-muted mb-2">Pending Bookings</h6>
+        <h2 class="mb-0 text-warning">@(Model?.ContainsKey("PendingBookings") == true ? Model["PendingBookings"] : 0)</h2>
+     </div>
+      <div class="text-warning" style="font-size: 3rem; opacity: 0.3;">
+        <i class="fas fa-clock"></i>
+</div>
+       </div>
+ </div>
+    </div>
+
+    <!-- Approved Bookings -->
+    <div class="col-md-4">
+   <div class="card card-dark p-4 h-100">
+         <div class="d-flex justify-content-between align-items-center">
+      <div>
+      <h6 class="text-muted mb-2">Approved Bookings</h6>
+        <h2 class="mb-0 text-success">@(Model?.ContainsKey("ApprovedBookings") == true ? Model["ApprovedBookings"] : 0)</h2>
+      </div>
+    <div class="text-success" style="font-size: 3rem; opacity: 0.3;">
+      <i class="fas fa-check-circle"></i>
+   </div>
+  </div>
         </div>
     </div>
 
-    <div class="col-md-6">
-        <div class="card card-dark p-3 mb-3">
-            <h5>Actions</h5>
-            <ul class="list-unstyled">
-                <li><a class="text-decoration-none" href="@Url.Action("Bookings", "Admin")">Manage bookings</a></li>
-            </ul>
+    <!-- Total Users -->
+    <div class="col-md-4">
+<div class="card card-dark p-4 h-100">
+    <div class="d-flex justify-content-between align-items-center">
+   <div>
+    <h6 class="text-muted mb-2">Total Users</h6>
+      <h2 class="mb-0">@(Model?.ContainsKey("TotalUsers") == true ? Model["TotalUsers"] : 0)</h2>
+  </div>
+      <div class="text-info" style="font-size: 3rem; opacity: 0.3;">
+      <i class="fas fa-users"></i>
+   </div>
+     </div>
+        </div>
+</div>
+
+    <!-- Total Drivers -->
+    <div class="col-md-4">
+ <div class="card card-dark p-4 h-100">
+ <div class="d-flex justify-content-between align-items-center">
+    <div>
+     <h6 class="text-muted mb-2">Total Drivers</h6>
+    <h2 class="mb-0">@(Model?.ContainsKey("TotalDrivers") == true ? Model["TotalDrivers"] : 0)</h2>
+        </div>
+ <div class="text-primary" style="font-size: 3rem; opacity: 0.3;">
+     <i class="fas fa-id-card"></i>
+     </div>
+ </div>
         </div>
     </div>
+
+    <!-- Total Vehicles -->
+    <div class="col-md-4">
+        <div class="card card-dark p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center">
+    <div>
+   <h6 class="text-muted mb-2">Total Vehicles</h6>
+  <h2 class="mb-0">@(Model?.ContainsKey("TotalVehicles") == true ? Model["TotalVehicles"] : 0)</h2>
+    </div>
+       <div class="text-danger" style="font-size: 3rem; opacity: 0.3;">
+  <i class="fas fa-bus"></i>
+    </div>
+  </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row">
+    <div class="col-md-6">
+    <div class="card card-dark p-4 mb-3">
+ <h5 class="mb-3">
+       <i class="fas fa-bolt me-2 text-warning"></i>Quick Actions
+    </h5>
+      <div class="list-group list-group-flush">
+   <a href="@Url.Action("Bookings", "Admin")" class="list-group-item list-group-item-action bg-transparent text-light border-secondary">
+        <i class="fas fa-calendar-check me-2"></i>Manage Bookings
+    </a>
+    <a href="@Url.Action("Users", "Admin")" class="list-group-item list-group-item-action bg-transparent text-light border-secondary">
+   <i class="fas fa-user-friends me-2"></i>Manage Users
+          </a>
+     <a href="@Url.Action("Drivers", "Admin")" class="list-group-item list-group-item-action bg-transparent text-light border-secondary">
+     <i class="fas fa-users me-2"></i>Manage Drivers
+    </a>
+    </div>
+        </div>
+ </div>
+
+    <div class="col-md-6">
+        <div class="card card-dark p-4 mb-3">
+      <h5 class="mb-3">
+<i class="fas fa-info-circle me-2 text-info"></i>System Information
+ </h5>
+    <ul class="list-unstyled mb-0">
+<li class="mb-2">
+    <i class="fas fa-check text-success me-2"></i>
+  <strong>System Status:</strong> <span class="text-success">Online</span>
+        </li>
+   <li class="mb-2">
+      <i class="fas fa-database text-info me-2"></i>
+   <strong>Database:</strong> MySQL Connected
+  </li>
+  <li class="mb-2">
+    <i class="fas fa-calendar text-warning me-2"></i>
+     <strong>Last Updated:</strong> @DateTime.Now.ToString("MMM dd, yyyy HH:mm")
+  </li>
+       </ul>
+  </div>
+ </div>
 </div>

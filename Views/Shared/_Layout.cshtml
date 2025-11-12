@@ -5,16 +5,20 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewBag.Title - Transportation System</title>
+    <title>@ViewBag.Title - Gr-TranspoStation</title>
 
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
 
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet" />
 
     <!-- Custom CSS -->
     <link href="~/Content/site-dark.css" rel="stylesheet" />
@@ -32,7 +36,7 @@
 
         /* Sidebar + Main Layout */
         .sidebar {
-            width: 240px;
+            width: 260px;
             background-color: #121212;
             color: #f1f1f1;
             position: fixed;
@@ -41,10 +45,45 @@
             height: 100vh;
             border-right: 1px solid rgba(255, 255, 255, 0.05);
             z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .sidebar .nav-link {
+            color: #9aa8bb;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar .nav-link:hover {
+            background-color: rgba(124, 58, 237, 0.1);
+            color: #fff;
+            transform: translateX(5px);
+        }
+
+        .sidebar .nav-link i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar .text-muted {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            opacity: 0.6;
+        }
+
+        .sidebar .border-bottom {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
         }
 
         main {
-            margin-left: 240px;
+            margin-left: 260px;
             padding: 80px 30px 30px;
             transition: margin-left 0.3s ease;
             min-height: 100vh;
@@ -54,10 +93,10 @@
         .top-navbar {
             position: fixed;
             top: 0;
-            left: 240px;
+            left: 260px;
             right: 0;
             height: 60px;
-            background-color: #181818;
+            background: linear-gradient(90deg, #181818 0%, #1f1f1f 100%);
             color: #fff;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
@@ -66,40 +105,68 @@
             padding: 0 20px;
             z-index: 1001;
             transition: left 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
         }
 
-            .top-navbar h5 {
-                margin: 0;
-                font-weight: 600;
-            }
+        .top-navbar h5 {
+            margin: 0;
+            font-weight: 600;
+        }
 
         .toggle-btn {
             background: none;
             border: none;
             color: #fff;
-            font-size: 22px; 
+            font-size: 22px;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .toggle-btn:hover {
+            color: #ffc107;
+        }
+
+        /* User info in navbar */
+        .top-navbar .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .top-navbar .user-info i {
+                 font-size: 18px;
+        }
+
+        /* Logout button */
+        .btn-outline-light:hover {
+            background-color: #ffc107;
+            border-color: #ffc107;
+            color: #000;
         }
 
         /* Mobile view */
-        media (max-width: 768px) {
-            .sidebar
+        @@media (max-width: 768px) {
+          .sidebar {
+        transform: translateX(-100%);
+      transition: transform 0.3s ease;
+}
 
-        {
-            display: none;
-        }
+  .sidebar.show {
+     transform: translateX(0);
+   }
 
-        main {
-            margin-left: 0;
-            padding-top: 70px;
-        }
+main {
+     margin-left: 0;
+        padding-top: 70px;
+         }
 
-        .top-navbar {
-            left: 0;
-        }
-
+      .top-navbar {
+      left: 0;
+          }
         }
     </style>
 </head>
+
 <body>
     <!-- Sidebar -->
     @Html.Partial("Sidebar")
@@ -112,18 +179,24 @@
             </button>
             <h5>@ViewBag.Title</h5>
         </div>
-        <div>
-            <span class="me-3"><i class="fa fa-user-circle"></i> @user</span>
+        <div class="user-info">
+            <span class="me-3">
+                <i class="fa fa-user-circle"></i> @user
+            </span>
             @if (User?.Identity?.IsAuthenticated ?? false)
             {
-                <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
-                    @Html.AntiForgeryToken()
-                    <button type="submit" class="btn btn-sm btn-outline-light">Logout</button>
-                </form>
+            <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-sm btn-outline-light">
+                    <i class="fa fa-sign-out-alt me-1"></i> Logout
+                </button>
+            </form>
             }
             else
             {
-                <a href="@Url.Action("Login", "Account")" class="btn btn-sm btn-outline-light">Login</a>
+            <a href="@Url.Action("Login", "Account")" class="btn btn-sm btn-outline-light">
+                <i class="fa fa-sign-in-alt me-1"></i> Login
+            </a>
             }
         </div>
     </header>
@@ -143,14 +216,23 @@
         // Toggle Sidebar (for mobile)
         const toggleBtn = document.getElementById('toggleSidebar');
         const sidebar = document.querySelector('.sidebar');
+
         if (toggleBtn && sidebar) {
             toggleBtn.addEventListener('click', () => {
-                sidebar.style.display =
-                    (sidebar.style.display === 'none' || sidebar.style.display === '')
-                        ? 'block'
-                        : 'none';
+                sidebar.classList.toggle('show');
+            });
+
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', (e) => {
+                if (window.innerWidth <= 768 &&
+                    !sidebar.contains(e.target) &&
+                    !toggleBtn.contains(e.target) &&
+                    sidebar.classList.contains('show')) {
+                    sidebar.classList.remove('show');
+                }
             });
         }
     </script>
 </body>
+
 </html>

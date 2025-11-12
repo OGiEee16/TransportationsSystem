@@ -14,6 +14,10 @@ namespace TransportationsSystem.Models
         public DateTime schedule { get; set; }
         public string status { get; set; } = "";
         public DateTime created_at { get; set; }
+        public int? driver_id { get; set; }  // ✅ Driver assignment
+        public string? driver_name { get; set; }  // ✅ For display purposes
+        public string? user_full_name { get; set; }  // ✅ For driver view display
+        public string? driver_status { get; set; }  // ✅ PENDING_DRIVER_RESPONSE, ACCEPTED, DECLINED
     }
 
 

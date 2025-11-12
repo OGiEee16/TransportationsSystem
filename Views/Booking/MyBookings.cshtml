@@ -5,38 +5,110 @@
 }
 <div class="card card-dark p-3">
     <h4>My Bookings</h4>
+    
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+          @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+   </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
     @if (!Model.Any())
     {
-        <p class="text-muted">You have no bookings yet.</p>
+  <p class="text-muted">You have no bookings yet.</p>
     }
     else
     {
-        <div class="table-responsive mt-3">
-            <table class="table table-dark-custom w-100">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Vehicle</th>
-                        <th>From</th>
-                        <th>To</th>
-                        <th>Schedule</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var b in Model)
-                    {
-                        <tr>
-                            <td>@b.id</td>
-                            <td>@b.vehicle_name</td>
-                            <td>@b.origin</td>
-                            <td>@b.destination</td>
-                            <td>@b.schedule.ToString("yyyy-MM-dd HH:mm")</td>
-                            <td><span class="badge @(b.status == "APPROVED" ? "bg-success" : b.status == "REJECTED" ? "bg-danger" : "bg-secondary")">@b.status</span></td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+ <div class="table-responsive mt-3">
+  <table class="table table-dark-custom w-100">
+       <thead>
+    <tr>
+ <th>#</th>
+         <th>Vehicle</th>
+ <th>From</th>
+    <th>To</th>
+    <th>Schedule</th>
+<th>Status</th>
+        <th>Driver</th>
+     <th>Actions</th>
+   </tr>
+   </thead>
+  <tbody>
+      @foreach (var b in Model)
+ {
+ <tr>
+ <td>@b.id</td>
+      <td>@b.vehicle_name</td>
+   <td>@b.origin</td>
+        <td>@b.destination</td>
+    <td>@b.schedule.ToString("yyyy-MM-dd HH:mm")</td>
+   <td>
+        <span class="badge @(b.status == "APPROVED" ? "bg-success" : 
+      b.status == "REJECTED" ? "bg-danger" : 
+      b.status == "CANCELLED" ? "bg-warning" : 
+        "bg-secondary")">
+       @b.status
+   </span>
+    </td>
+<td>
+  @if (b.status == "APPROVED" && !string.IsNullOrEmpty(b.driver_name))
+     {
+  <div>
+      <span class="badge bg-info text-dark">
+       <i class="bi bi-person-badge"></i> @b.driver_name
+      </span>
+      </div>
+ @if (b.driver_status == "PENDING_DRIVER_RESPONSE")
+  {
+    <small class="text-warning">
+   <i class="bi bi-clock-history"></i> Waiting for driver response
+     </small>
+ }
+   else if (b.driver_status == "ACCEPTED")
+{
+   <small class="text-success">
+      <i class="bi bi-check-circle"></i> Driver accepted
+  </small>
+}
+ }
+    else if (b.status == "APPROVED")
+     {
+  <span class="text-muted">Not assigned yet</span>
+       }
+       else
+  {
+  <span class="text-muted">—</span>
+ }
+   </td>
+   <td>
+  @if (b.status == "PENDING")
+       {
+  <form method="post" action="@Url.Action("Cancel", "Booking")" style="display:inline;">
+  @Html.AntiForgeryToken()
+   <input type="hidden" name="bookingId" value="@b.id" />
+     <button type="submit" class="btn btn-sm btn-danger" 
+    onclick="return confirm('Are you sure you want to cancel this booking?');">
+   Cancel
+    </button>
+ </form>
+      }
+     else
+ {
+    <span class="text-muted">—</span>
+ }
+     </td>
+        </tr>
+}
+   </tbody>
+      </table>
+  </div>
     }
 </div>
