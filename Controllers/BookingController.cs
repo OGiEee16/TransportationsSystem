@@ -144,6 +144,12 @@ namespace TransportationsSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> MarkAsPaid(int bookingId)
         {
+            // Disabled: Only drivers can confirm payment now
+            TempData["Error"] = "Payment confirmation is now done by your assigned driver. " +
+                                "Please pay directly to your driver, and they will confirm receipt.";
+            return RedirectToAction("MyBookings");
+            
+            /* OLD CODE - Passengers could mark as paid
             var username = User.Identity?.Name;
             var user = await _db.GetUserByUsernameAsync(username);
             if (user == null) return RedirectToAction("Login", "Account");
@@ -160,6 +166,7 @@ namespace TransportationsSystem.Controllers
             }
 
             return RedirectToAction("MyBookings");
+            */
         }
     }
 }

@@ -303,16 +303,16 @@
                             </form>
                         }
                         
-                        @if (b.payment_status == "UNPAID" && (b.status == "APPROVED" || b.status == "PENDING"))
+                        @* Removed passenger "Mark as Paid" button - Only drivers can confirm payment *@
+                        @if (b.payment_status == "UNPAID" && b.status == "APPROVED" && b.driver_status == "ACCEPTED")
                         {
-                            <form method="post" action="@Url.Action("MarkAsPaid", "Booking")" style="display:inline;">
-                                @Html.AntiForgeryToken()
-                                <input type="hidden" name="bookingId" value="@b.id" />
-                                <button type="submit" class="btn btn-sm btn-success" 
-                                        onclick="return confirm('Confirm that you have paid ₱@b.payment_amount.ToString("N2")?');">
-                                    <i class="fas fa-check-circle me-1"></i>Mark as Paid
-                                </button>
-                            </form>
+                            <div class="alert alert-info mb-0 flex-grow-1">
+                                <small>
+                                    <i class="fas fa-hand-holding-usd me-1"></i>
+                                    Please pay PHP @b.payment_amount.ToString("N2") directly to your driver. 
+                                    The driver will confirm payment receipt.
+                                </small>
+                            </div>
                         }
 
                         <small class="text-muted ms-auto align-self-center">
