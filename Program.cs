@@ -113,6 +113,140 @@ WHERE TABLE_SCHEMA = 'transportationsystem'
      }
     }
 
+        // ✅ Check if payment columns exist, if not add them
+        var checkPaymentColumnsSql = @"
+            SELECT COUNT(*) 
+            FROM INFORMATION_SCHEMA.COLUMNS 
+            WHERE TABLE_SCHEMA = 'transportationsystem' 
+              AND TABLE_NAME = 'bookings' 
+              AND COLUMN_NAME IN ('payment_amount', 'payment_status', 'trip_type', 'trip_days')";
+        
+        using (var checkPaymentCommand = new MySqlCommand(checkPaymentColumnsSql, connection))
+        {
+            var paymentColumnsCount = Convert.ToInt32(checkPaymentCommand.ExecuteScalar());
+            
+            if (paymentColumnsCount < 4) // If not all payment columns exist
+            {
+                var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+                logger.LogInformation("Adding payment columns to bookings table...");
+
+                try
+                {
+                    // Check and add payment_amount column
+                    var checkCol1 = @"SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS 
+                                     WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'bookings' 
+                                     AND COLUMN_NAME = 'payment_amount'";
+                    using (var cmd = new MySqlCommand(checkCol1, connection))
+                    {
+                        if (Convert.ToInt32(cmd.ExecuteScalar()) == 0)
+                        {
+                            var addPaymentAmountSql = @"ALTER TABLE bookings 
+                                ADD COLUMN payment_amount DECIMAL(10,2) NOT NULL DEFAULT 0.00";
+                            using var addCmd = new MySqlCommand(addPaymentAmountSql, connection);
+                            addCmd.ExecuteNonQuery();
+                            logger.LogInformation("✅ Added payment_amount column");
+                        }
+                    }
+
+                    // Check and add payment_status column
+                    var checkCol2 = @"SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS 
+                                     WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'bookings' 
+                                     AND COLUMN_NAME = 'payment_status'";
+                    using (var cmd = new MySqlCommand(checkCol2, connection))
+                    {
+                        if (Convert.ToInt32(cmd.ExecuteScalar()) == 0)
+                        {
+                            var addPaymentStatusSql = @"ALTER TABLE bookings 
+                                ADD COLUMN payment_status VARCHAR(20) NOT NULL DEFAULT 'UNPAID'";
+                            using var addCmd = new MySqlCommand(addPaymentStatusSql, connection);
+                            addCmd.ExecuteNonQuery();
+                            logger.LogInformation("✅ Added payment_status column");
+                        }
+                    }
+
+                    // Check and add trip_type column
+                    var checkCol3 = @"SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS 
+                                     WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'bookings' 
+                                     AND COLUMN_NAME = 'trip_type'";
+                    using (var cmd = new MySqlCommand(checkCol3, connection))
+                    {
+                        if (Convert.ToInt32(cmd.ExecuteScalar()) == 0)
+                        {
+                            var addTripTypeSql = @"ALTER TABLE bookings 
+                                ADD COLUMN trip_type VARCHAR(20) NOT NULL DEFAULT 'ONE_WAY'";
+                            using var addCmd = new MySqlCommand(addTripTypeSql, connection);
+                            addCmd.ExecuteNonQuery();
+                            logger.LogInformation("✅ Added trip_type column");
+                        }
+                    }
+
+                    // Check and add trip_days column
+                    var checkCol4 = @"SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS 
+                                     WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'bookings' 
+                                     AND COLUMN_NAME = 'trip_days'";
+                    using (var cmd = new MySqlCommand(checkCol4, connection))
+                    {
+                        if (Convert.ToInt32(cmd.ExecuteScalar()) == 0)
+                        {
+                            var addTripDaysSql = @"ALTER TABLE bookings 
+                                ADD COLUMN trip_days INT NOT NULL DEFAULT 1";
+                            using var addCmd = new MySqlCommand(addTripDaysSql, connection);
+                            addCmd.ExecuteNonQuery();
+                            logger.LogInformation("✅ Added trip_days column");
+                        }
+                    }
+
+                    // Add indexes if they don't exist
+                    try
+                    {
+                        var checkIndex1 = @"SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS 
+                                           WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'bookings' 
+                                           AND INDEX_NAME = 'idx_payment_status'";
+                        using (var cmd = new MySqlCommand(checkIndex1, connection))
+                        {
+                            if (Convert.ToInt32(cmd.ExecuteScalar()) == 0)
+                            {
+                                var addIndexSql = @"ALTER TABLE bookings ADD INDEX idx_payment_status (payment_status)";
+                                using var addCmd = new MySqlCommand(addIndexSql, connection);
+                                addCmd.ExecuteNonQuery();
+                            }
+                        }
+
+                        var checkIndex2 = @"SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS 
+                                           WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'bookings' 
+                                           AND INDEX_NAME = 'idx_trip_type'";
+                        using (var cmd = new MySqlCommand(checkIndex2, connection))
+                        {
+                            if (Convert.ToInt32(cmd.ExecuteScalar()) == 0)
+                            {
+                                var addIndexSql = @"ALTER TABLE bookings ADD INDEX idx_trip_type (trip_type)";
+                                using var addCmd = new MySqlCommand(addIndexSql, connection);
+                                addCmd.ExecuteNonQuery();
+                            }
+                        }
+
+                        logger.LogInformation("✅ Added indexes for payment columns");
+                    }
+                    catch (Exception idxEx)
+                    {
+                        logger.LogWarning($"Indexes might already exist: {idxEx.Message}");
+                    }
+
+                    logger.LogInformation("🎉 Payment system is ready!");
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "❌ Error adding payment columns. Please run add_payment_columns.sql manually.");
+                    logger.LogError("See FIX_MIGRATION_ERROR.md for instructions.");
+                }
+            }
+            else
+            {
+                var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+                logger.LogInformation("✅ Payment columns already exist.");
+            }
+        }
+
      // Check if there are any vehicles, if not, seed some data
         using (var checkCommand = new MySqlCommand("SELECT COUNT(*) FROM vehicles", connection))
  {

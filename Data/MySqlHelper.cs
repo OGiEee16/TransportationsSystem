@@ -77,8 +77,10 @@ namespace TransportationsSystem.Data
         {
             using var db = Connection;
             string sql = @"INSERT INTO bookings 
-        (user_id, vehicle_id, vehicle_name, capacity, origin, destination, schedule, status, created_at)
-        VALUES (@user_id, @vehicle_id, @vehicle_name, @capacity, @origin, @destination, @schedule, @status, @created_at);
+        (user_id, vehicle_id, vehicle_name, capacity, origin, destination, schedule, status, created_at, 
+         trip_type, trip_days, payment_amount, payment_status)
+        VALUES (@user_id, @vehicle_id, @vehicle_name, @capacity, @origin, @destination, @schedule, @status, @created_at,
+                @trip_type, @trip_days, @payment_amount, @payment_status);
         SELECT LAST_INSERT_ID();";
             return await db.ExecuteScalarAsync<int>(sql, b);
         }
@@ -90,6 +92,7 @@ namespace TransportationsSystem.Data
             string sql = @"
         SELECT b.id, b.user_id, b.vehicle_id, b.origin, b.destination,
                b.schedule, b.status, b.created_at, b.driver_id, b.driver_status,
+               b.trip_type, b.trip_days, b.payment_amount, b.payment_status,
                v.name AS vehicle_name, v.capacity,
                d.full_name AS driver_name
         FROM bookings b
@@ -158,6 +161,7 @@ namespace TransportationsSystem.Data
             string sql = @"
         SELECT b.id, b.user_id, b.vehicle_id, b.origin, b.destination,
                b.schedule, b.status, b.created_at, b.driver_id, b.driver_status,
+               b.trip_type, b.trip_days, b.payment_amount, b.payment_status,
                v.name AS vehicle_name, v.capacity,
                u.full_name AS user_full_name
         FROM bookings b
@@ -245,6 +249,95 @@ using var db = Connection;
   string sql = "UPDATE users SET role = @newRole WHERE id = @userId";
     var rowsAffected = await db.ExecuteAsync(sql, new { userId, newRole });
       return rowsAffected > 0;
+        }
+
+        // ? Mark booking as paid
+        public async Task<bool> MarkBookingAsPaidAsync(int bookingId, int userId)
+        {
+            using var db = Connection;
+            string sql = @"UPDATE bookings 
+                          SET payment_status = 'PAID' 
+                          WHERE id = @bookingId 
+                          AND user_id = @userId 
+                          AND payment_status = 'UNPAID'";
+            var rowsAffected = await db.ExecuteAsync(sql, new { bookingId, userId });
+            return rowsAffected > 0;
+        }
+
+        // ? Confirm payment by driver
+        public async Task<bool> ConfirmPaymentByDriverAsync(int bookingId, int driverId)
+        {
+            using var db = Connection;
+            string sql = @"UPDATE bookings 
+                          SET payment_status = 'PAID' 
+                          WHERE id = @bookingId 
+                          AND driver_id = @driverId 
+                          AND status = 'APPROVED'";
+            var rowsAffected = await db.ExecuteAsync(sql, new { bookingId, driverId });
+            return rowsAffected > 0;
+        }
+
+        // ? Get driver revenue statistics
+        public async Task<Dictionary<string, decimal>> GetDriverRevenueStatsAsync(int driverId)
+        {
+            using var db = Connection;
+            var stats = new Dictionary<string, decimal>();
+
+            // Total earnings (all paid bookings)
+            var totalEarningsSql = @"SELECT COALESCE(SUM(payment_amount), 0) 
+                                    FROM bookings 
+                                    WHERE driver_id = @driverId 
+                                    AND payment_status = 'PAID' 
+                                    AND status = 'APPROVED'";
+            stats["TotalEarnings"] = await db.ExecuteScalarAsync<decimal>(totalEarningsSql, new { driverId });
+
+            // Pending earnings (accepted but unpaid)
+            var pendingEarningsSql = @"SELECT COALESCE(SUM(payment_amount), 0) 
+                                       FROM bookings 
+                                       WHERE driver_id = @driverId 
+                                       AND payment_status = 'UNPAID' 
+                                       AND driver_status = 'ACCEPTED' 
+                                       AND status = 'APPROVED'";
+            stats["PendingEarnings"] = await db.ExecuteScalarAsync<decimal>(pendingEarningsSql, new { driverId });
+
+            // This month's earnings
+            var monthlyEarningsSql = @"SELECT COALESCE(SUM(payment_amount), 0) 
+                                       FROM bookings 
+                                       WHERE driver_id = @driverId 
+                                       AND payment_status = 'PAID' 
+                                       AND status = 'APPROVED' 
+                                       AND YEAR(schedule) = YEAR(CURDATE()) 
+                                       AND MONTH(schedule) = MONTH(CURDATE())";
+            stats["MonthlyEarnings"] = await db.ExecuteScalarAsync<decimal>(monthlyEarningsSql, new { driverId });
+
+            // Completed trips count
+            var completedTripsSql = @"SELECT COUNT(*) 
+                                     FROM bookings 
+                                     WHERE driver_id = @driverId 
+                                     AND payment_status = 'PAID' 
+                                     AND status = 'APPROVED'";
+            stats["CompletedTrips"] = await db.ExecuteScalarAsync<decimal>(completedTripsSql, new { driverId });
+
+            return stats;
+        }
+
+        // ? Get driver monthly revenue breakdown
+        public async Task<IEnumerable<dynamic>> GetDriverMonthlyRevenueAsync(int driverId, int months = 6)
+        {
+            using var db = Connection;
+            string sql = @"SELECT 
+                            DATE_FORMAT(schedule, '%Y-%m') AS month,
+                            DATE_FORMAT(schedule, '%b %Y') AS month_name,
+                            COUNT(*) AS trip_count,
+                            SUM(CASE WHEN payment_status = 'PAID' THEN payment_amount ELSE 0 END) AS revenue,
+                            SUM(CASE WHEN payment_status = 'UNPAID' THEN payment_amount ELSE 0 END) AS pending
+                          FROM bookings 
+                          WHERE driver_id = @driverId 
+                          AND status = 'APPROVED'
+                          AND schedule >= DATE_SUB(CURDATE(), INTERVAL @months MONTH)
+                          GROUP BY DATE_FORMAT(schedule, '%Y-%m'), DATE_FORMAT(schedule, '%b %Y')
+                          ORDER BY month DESC";
+            return await db.QueryAsync(sql, new { driverId, months });
         }
     }
 }

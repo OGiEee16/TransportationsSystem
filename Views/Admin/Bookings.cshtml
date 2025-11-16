@@ -35,6 +35,8 @@
  <th>Origin</th>
      <th>Destination</th>
      <th>Schedule</th>
+                <th>Trip Type</th>
+                <th>Payment</th>
     <th>Status</th>
      <th>Driver</th>
    <th>Driver Status</th>
@@ -51,6 +53,37 @@
         <td>@b.origin</td>
      <td>@b.destination</td>
      <td>@b.schedule.ToString("yyyy-MM-dd HH:mm")</td>
+                <td>
+                    <small>
+                        @if (b.trip_type == "ONE_WAY")
+                        {
+                            <text>One Way</text>
+                        }
+                        else if (b.trip_type == "ROUND_TRIP")
+                        {
+                            <text>Round Trip</text>
+                        }
+                        else if (b.trip_type == "DAY_TRIP")
+                        {
+                            <text>Day Trip (@b.trip_days d)</text>
+                        }
+                    </small>
+                </td>
+                <td>
+                    <div>
+                        <strong class="text-success">₱@b.payment_amount.ToString("N2")</strong>
+                    </div>
+                    <small>
+                        @if (b.payment_status == "PAID")
+                        {
+                            <span class="badge bg-success">PAID</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-warning text-dark">UNPAID</span>
+                        }
+                    </small>
+                </td>
        <td>
      <span class="badge @(b.status == "APPROVED" ? "bg-success" : 
      b.status == "REJECTED" ? "bg-danger" : 

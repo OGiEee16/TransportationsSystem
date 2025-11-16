@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using TransportationsSystem.Data;
 using TransportationsSystem.Models;
+using TransportationsSystem.Services;
 
 namespace TransportationsSystem.Controllers
 {
@@ -28,7 +29,8 @@ namespace TransportationsSystem.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(int vehicleId, string origin, string destination, string schedule)
+        public async Task<IActionResult> Create(int vehicleId, string origin, string destination, string schedule, 
+            string tripType, int tripDays, decimal paymentAmount)
         {
             if (!DateTime.TryParse(schedule, out var scheduleDt))
             {
@@ -57,6 +59,31 @@ namespace TransportationsSystem.Controllers
                 return View();
             }
 
+            // Validate payment amount
+            if (paymentAmount <= 0)
+            {
+                ViewBag.Error = "Invalid payment amount calculated.";
+                ViewBag.Vehicles = await _db.GetAllVehiclesAsync();
+                return View();
+            }
+
+            // Validate trip days for day trips
+            if (tripType == "DAY_TRIP" && (tripDays < 1 || tripDays > 30))
+            {
+                ViewBag.Error = "Invalid number of days for day trip. Must be between 1 and 30 days.";
+                ViewBag.Vehicles = await _db.GetAllVehiclesAsync();
+                return View();
+            }
+
+            // Recalculate payment on server side to prevent tampering
+            decimal calculatedAmount = PaymentCalculator.CalculatePayment(origin, destination, tripType, tripDays);
+            
+            // Allow small discrepancy due to rounding
+            if (Math.Abs(calculatedAmount - paymentAmount) > 1)
+            {
+                paymentAmount = calculatedAmount; // Use server-calculated amount
+            }
+
             var booking = new Booking
             {
                 user_id = user.id,
@@ -67,12 +94,17 @@ namespace TransportationsSystem.Controllers
                 destination = destination,
                 schedule = scheduleDt,
                 status = "PENDING",
-                created_at = DateTime.Now  // ✅ Set created_at timestamp
+                created_at = DateTime.Now,
+                trip_type = tripType,
+                trip_days = tripDays,
+                payment_amount = paymentAmount,
+                payment_status = "UNPAID"
             };
 
-
             await _db.CreateBookingAsync(booking);
-            TempData["Success"] = "Booking created successfully and is pending approval.";
+            
+            TempData["Success"] = $"Booking created successfully! Payment amount: PHP {paymentAmount:N2}. " +
+                                  "Please prepare payment. The driver will be notified once your booking is approved.";
             return RedirectToAction("MyBookings");
         }
 
@@ -103,6 +135,28 @@ namespace TransportationsSystem.Controllers
             else
             {
                 TempData["Error"] = "Unable to cancel booking. Only pending bookings can be cancelled.";
+            }
+
+            return RedirectToAction("MyBookings");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MarkAsPaid(int bookingId)
+        {
+            var username = User.Identity?.Name;
+            var user = await _db.GetUserByUsernameAsync(username);
+            if (user == null) return RedirectToAction("Login", "Account");
+
+            var success = await _db.MarkBookingAsPaidAsync(bookingId, user.id);
+          
+            if (success)
+            {
+                TempData["Success"] = "Payment confirmed! Driver has been notified.";
+            }
+            else
+            {
+                TempData["Error"] = "Unable to confirm payment. Please contact support.";
             }
 
             return RedirectToAction("MyBookings");

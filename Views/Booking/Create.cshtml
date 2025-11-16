@@ -3,10 +3,241 @@
     ViewBag.Title = "Book a Ride";
     var vehicles = (IEnumerable<TransportationsSystem.Models.Vehicle>)ViewBag.Vehicles;
 }
+
+<style>
+    .card-dark {
+        color: #e6eef6 !important;
+        background: linear-gradient(180deg, rgba(12,18,30,0.95), rgba(8,12,20,0.9));
+        border: 1px solid rgba(124, 58, 237, 0.2);
+    }
+
+    .card-dark .form-label {
+        color: #e5e7eb !important;
+        font-weight: 600;
+        font-size: 0.95rem;
+        margin-bottom: 8px;
+    }
+
+    .card-dark .form-control,
+    .card-dark .form-select {
+        color: #fff !important;
+        background: rgba(15, 23, 42, 0.9) !important;
+        border: 1px solid rgba(124, 58, 237, 0.4) !important;
+        transition: all 0.3s ease;
+    }
+
+    .card-dark .form-control:focus,
+    .card-dark .form-select:focus {
+        background: rgba(15, 23, 42, 1) !important;
+        border-color: #7c3aed !important;
+        box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15) !important;
+        color: #fff !important;
+    }
+
+    .card-dark .form-control::placeholder {
+        color: #9ca3af !important;
+        opacity: 0.7;
+    }
+
+    .card-dark h4, .card-dark h5, .card-dark h6 {
+        color: #fff !important;
+    }
+
+    .card-dark small {
+        color: #d1d5db !important;
+    }
+
+    .card-dark .text-muted {
+        color: #9ca3af !important;
+    }
+
+    .payment-summary {
+        background: linear-gradient(135deg, rgba(124, 58, 237, 0.15) 0%, rgba(16, 185, 129, 0.15) 100%);
+        border: 2px solid rgba(124, 58, 237, 0.4);
+        border-radius: 16px;
+        padding: 25px;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    .payment-summary h5 {
+        color: #a855f7 !important;
+        font-weight: 700;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .payment-amount {
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin: 15px 0;
+    }
+
+    .payment-details {
+        background: rgba(15, 23, 42, 0.8);
+        border-radius: 10px;
+        padding: 15px;
+        margin-top: 15px;
+        border: 1px solid rgba(124, 58, 237, 0.2);
+    }
+
+    .payment-details p {
+        margin: 8px 0;
+        display: flex;
+        justify-content: space-between;
+        color: #d1d5db !important;
+    }
+
+    .payment-details p span {
+        color: #9ca3af !important;
+    }
+
+    .payment-details p strong {
+        color: #fff !important;
+    }
+
+    .payment-details .text-warning {
+        color: #fbbf24 !important;
+    }
+
+    .trip-type-selector {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+
+    .trip-type-option {
+        position: relative;
+    }
+
+    .trip-type-option input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+    }
+
+    .trip-type-option label {
+        display: block;
+        padding: 15px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 2px solid rgba(124, 58, 237, 0.3);
+        border-radius: 12px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        color: #e5e7eb !important;
+        font-weight: 600;
+    }
+
+    .trip-type-option input[type="radio"]:checked + label {
+        background: rgba(124, 58, 237, 0.25);
+        border-color: #7c3aed;
+        color: #fff !important;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(124, 58, 237, 0.4);
+    }
+
+    .trip-type-option label i {
+        display: block;
+        font-size: 1.5rem;
+        margin-bottom: 8px;
+        color: #a855f7 !important;
+    }
+
+    .trip-type-option label div {
+        color: inherit !important;
+    }
+
+    #dayTripSection {
+        animation: fadeIn 0.3s ease;
+    }
+
+    #dayTripSection label {
+        color: #e5e7eb !important;
+    }
+
+    #dayTripSection small {
+        color: #9ca3af !important;
+    }
+
+    #dayTripSection .form-control {
+        color: #fff !important;
+        background: rgba(15, 23, 42, 0.9) !important;
+    }
+
+    .alert-info {
+        background: rgba(59, 130, 246, 0.15) !important;
+        border-left: 4px solid #3b82f6;
+        color: #93c5fd !important;
+        border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+
+    .alert-info i {
+        color: #60a5fa !important;
+    }
+
+    .alert-info small {
+        color: #bfdbfe !important;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+        border: none;
+        color: #fff !important;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #6d28d9 0%, #9333ea 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(124, 58, 237, 0.4);
+        color: #fff !important;
+    }
+
+    /* Fix select option colors */
+    .form-select option {
+        background: #1e293b;
+        color: #fff;
+    }
+
+    /* Fix datetime-local input */
+    input[type="datetime-local"] {
+        color-scheme: dark;
+    }
+
+    input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+    }
+
+    @@keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Additional contrast improvements */
+    .card-dark .d-flex h4 {
+        color: #fff !important;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .form-label i {
+        color: #a855f7 !important;
+        margin-right: 5px;
+    }
+</style>
+
 <div class="card card-dark p-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h4>Book a Ride</h4>
-        <small class="text-muted">Choose schedule & vehicle</small>
+        <small class="text-muted">Choose schedule, vehicle & trip type</small>
     </div>
 
     @if (ViewBag.Error != null)
@@ -18,16 +249,96 @@
         <div class="alert alert-success">@TempData["Success"]</div>
     }
 
-    <form method="post" action="@Url.Action("Create","Booking")">
+    <form method="post" action="@Url.Action("Create","Booking")" id="bookingForm">
         @Html.AntiForgeryToken()
+        
+        <!-- Trip Type Selection -->
+        <div class="mb-4">
+            <label class="form-label">Trip Type</label>
+            <div class="trip-type-selector">
+                <div class="trip-type-option">
+                    <input type="radio" id="oneWay" name="tripType" value="ONE_WAY" checked>
+                    <label for="oneWay">
+                        <i class="fas fa-arrow-right"></i>
+                        <div>One Way</div>
+                    </label>
+                </div>
+                <div class="trip-type-option">
+                    <input type="radio" id="roundTrip" name="tripType" value="ROUND_TRIP">
+                    <label for="roundTrip">
+                        <i class="fas fa-exchange-alt"></i>
+                        <div>Round Trip</div>
+                    </label>
+                </div>
+                <div class="trip-type-option">
+                    <input type="radio" id="dayTrip" name="tripType" value="DAY_TRIP">
+                    <label for="dayTrip">
+                        <i class="fas fa-calendar-day"></i>
+                        <div>Day Trip</div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Day Trip Days Selection (Hidden by default) -->
+        <div id="dayTripSection" style="display: none;" class="mb-3">
+            <label class="form-label">Number of Days</label>
+            <input type="number" id="tripDays" name="tripDays" class="form-control" min="1" max="30" value="1">
+            <small class="text-muted">Select the number of days for your trip (1-30 days)</small>
+        </div>
+
         <div class="row g-3">
             <div class="col-md-6">
                 <label class="form-label">Origin</label>
-                <input name="origin" class="form-control" required />
+                <select name="origin" id="origin" class="form-select" required>
+                    <option value="">Select Origin</option>
+                    <option value="Tagbilaran City">Tagbilaran City</option>
+                    <option value="Panglao">Panglao</option>
+                    <option value="Dauis">Dauis</option>
+                    <option value="Baclayon">Baclayon</option>
+                    <option value="Loboc">Loboc</option>
+                    <option value="Carmen">Carmen</option>
+                    <option value="Tubigon">Tubigon</option>
+                    <option value="Ubay">Ubay</option>
+                    <option value="Talibon">Talibon</option>
+                    <option value="Jagna">Jagna</option>
+                    <option value="Anda">Anda</option>
+                    <option value="Alburquerque">Alburquerque</option>
+                    <option value="Loay">Loay</option>
+                    <option value="Loon">Loon</option>
+                    <option value="Calape">Calape</option>
+                    <option value="Clarin">Clarin</option>
+                    <option value="Inabanga">Inabanga</option>
+                    <option value="Sagbayan">Sagbayan</option>
+                    <option value="Candijay">Candijay</option>
+                    <option value="Guindulman">Guindulman</option>
+                </select>
             </div>
             <div class="col-md-6">
                 <label class="form-label">Destination</label>
-                <input name="destination" class="form-control" required />
+                <select name="destination" id="destination" class="form-select" required>
+                    <option value="">Select Destination</option>
+                    <option value="Tagbilaran City">Tagbilaran City</option>
+                    <option value="Panglao">Panglao</option>
+                    <option value="Dauis">Dauis</option>
+                    <option value="Baclayon">Baclayon</option>
+                    <option value="Loboc">Loboc</option>
+                    <option value="Carmen">Carmen</option>
+                    <option value="Tubigon">Tubigon</option>
+                    <option value="Ubay">Ubay</option>
+                    <option value="Talibon">Talibon</option>
+                    <option value="Jagna">Jagna</option>
+                    <option value="Anda">Anda</option>
+                    <option value="Alburquerque">Alburquerque</option>
+                    <option value="Loay">Loay</option>
+                    <option value="Loon">Loon</option>
+                    <option value="Calape">Calape</option>
+                    <option value="Clarin">Clarin</option>
+                    <option value="Inabanga">Inabanga</option>
+                    <option value="Sagbayan">Sagbayan</option>
+                    <option value="Candijay">Candijay</option>
+                    <option value="Guindulman">Guindulman</option>
+                </select>
             </div>
             <div class="col-md-6">
                 <label class="form-label">Schedule</label>
@@ -39,13 +350,167 @@
                     <option value="">Select vehicle</option>
                     @foreach (var v in vehicles)
                     {
-                        <option value="@v.id">@v.name (@v.type) — Seats: @v.capacity</option>
+                        <option value="@v.id">@v.name (@v.type) — Capacity: @v.capacity</option>
                     }
                 </select>
             </div>
         </div>
+
+        <!-- Payment Summary -->
+        <div class="payment-summary" id="paymentSummary" style="display: none;">
+            <h5>
+                <i class="fas fa-receipt"></i>
+                Payment Summary
+            </h5>
+            <div class="payment-amount">
+                ₱<span id="totalAmount">0.00</span>
+            </div>
+            <div class="payment-details">
+                <p>
+                    <span><i class="fas fa-route"></i> Route:</span>
+                    <strong id="routeDisplay">-</strong>
+                </p>
+                <p>
+                    <span><i class="fas fa-map-signs"></i> Trip Type:</span>
+                    <strong id="tripTypeDisplay">One Way</strong>
+                </p>
+                <p id="daysDisplay" style="display: none;">
+                    <span><i class="fas fa-calendar"></i> Number of Days:</span>
+                    <strong id="daysCount">1</strong>
+                </p>
+                <p>
+                    <span><i class="fas fa-info-circle"></i> Payment Status:</span>
+                    <strong class="text-warning">Payment Required</strong>
+                </p>
+            </div>
+            <div class="alert alert-info mt-3 mb-0">
+                <i class="fas fa-lightbulb me-2"></i>
+                <small>Please prepare the payment amount. The driver will confirm payment upon booking acceptance.</small>
+            </div>
+        </div>
+
+        <input type="hidden" id="paymentAmount" name="paymentAmount" value="0">
+
         <div class="mt-3">
-            <button class="btn btn-primary">Create Booking</button>
+            <button type="submit" class="btn btn-primary btn-lg w-100" id="submitBtn">
+                <i class="fas fa-check-circle me-2"></i>Create Booking & Proceed to Payment
+            </button>
         </div>
     </form>
 </div>
+
+<script>
+    // Distance matrix (same as backend)
+    const distanceMatrix = {
+        "Tagbilaran City": { "Panglao": 18, "Dauis": 12, "Baclayon": 10, "Loboc": 24, "Carmen": 55, "Tubigon": 52, "Ubay": 90, "Talibon": 95, "Jagna": 63, "Anda": 90, "Alburquerque": 15, "Loay": 20, "Loon": 45, "Calape": 48, "Clarin": 67, "Inabanga": 75, "Sagbayan": 70, "Candijay": 75, "Guindulman": 85 },
+        "Panglao": { "Tagbilaran City": 18, "Dauis": 8, "Baclayon": 22, "Loboc": 35, "Carmen": 65, "Jagna": 75, "Anda": 100 },
+        "Carmen": { "Tagbilaran City": 55, "Loboc": 35, "Sagbayan": 20, "Jagna": 80 },
+        "Jagna": { "Tagbilaran City": 63, "Anda": 28, "Candijay": 25, "Guindulman": 35, "Carmen": 80 },
+        "Anda": { "Tagbilaran City": 90, "Jagna": 28, "Candijay": 18, "Guindulman": 25 }
+    };
+
+    const BASE_RATE_PER_KM = 15.0;
+    const ROUND_TRIP_MULTIPLIER = 1.8;
+    const DAY_TRIP_BASE = 3000.0;
+    const DAY_TRIP_PER_DAY = 2500.0;
+
+    function getDistance(origin, destination) {
+        if (distanceMatrix[origin] && distanceMatrix[origin][destination]) {
+            return distanceMatrix[origin][destination];
+        }
+        if (distanceMatrix[destination] && distanceMatrix[destination][origin]) {
+            return distanceMatrix[destination][origin];
+        }
+        return 50; // Default estimate
+    }
+
+    function calculatePayment() {
+        const origin = document.getElementById('origin').value;
+        const destination = document.getElementById('destination').value;
+        const tripType = document.querySelector('input[name="tripType"]:checked').value;
+        const tripDays = parseInt(document.getElementById('tripDays').value) || 1;
+
+        if (!origin || !destination) {
+            document.getElementById('paymentSummary').style.display = 'none';
+            return;
+        }
+
+        if (origin === destination) {
+            document.getElementById('totalAmount').textContent = '100.00';
+            document.getElementById('paymentAmount').value = '100.00';
+            updatePaymentDisplay(origin, destination, tripType, tripDays);
+            return;
+        }
+
+        const distance = getDistance(origin, destination);
+        let amount = 0;
+
+        switch (tripType) {
+            case 'ONE_WAY':
+                amount = Math.max(distance * BASE_RATE_PER_KM, 150);
+                break;
+            case 'ROUND_TRIP':
+                amount = Math.max(distance * BASE_RATE_PER_KM, 150) * ROUND_TRIP_MULTIPLIER;
+                break;
+            case 'DAY_TRIP':
+                amount = DAY_TRIP_BASE;
+                if (tripDays > 1) {
+                    amount += (tripDays - 1) * DAY_TRIP_PER_DAY;
+                }
+                if (distance > 50) {
+                    amount += (distance - 50) * 10 * tripYears;
+                }
+                break;
+        }
+
+        amount = Math.round(amount * 100) / 100;
+        document.getElementById('totalAmount').textContent = amount.toFixed(2);
+        document.getElementById('paymentAmount').value = amount.toFixed(2);
+        updatePaymentDisplay(origin, destination, tripType, tripDays);
+    }
+
+    function updatePaymentDisplay(origin, destination, tripType, tripDays) {
+        document.getElementById('routeDisplay').textContent = `${origin} → ${destination}`;
+        
+        const tripTypeNames = {
+            'ONE_WAY': 'One Way',
+            'ROUND_TRIP': 'Round Trip',
+            'DAY_TRIP': 'Day Trip'
+        };
+        document.getElementById('tripTypeDisplay').textContent = tripTypeNames[tripType];
+
+        if (tripType === 'DAY_TRIP') {
+            document.getElementById('daysDisplay').style.display = 'flex';
+            document.getElementById('daysCount').textContent = `${tripDays} day${tripDays > 1 ? 's' : ''}`;
+        } else {
+            document.getElementById('daysDisplay').style.display = 'none';
+        }
+
+        document.getElementById('paymentSummary').style.display = 'block';
+    }
+
+    // Event listeners
+    document.getElementById('origin').addEventListener('change', calculatePayment);
+    document.getElementById('destination').addEventListener('change', calculatePayment);
+    document.querySelectorAll('input[name="tripType"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            if (this.value === 'DAY_TRIP') {
+                document.getElementById('dayTripSection').style.display = 'block';
+            } else {
+                document.getElementById('dayTripSection').style.display = 'none';
+            }
+            calculatePayment();
+        });
+    });
+    document.getElementById('tripDays').addEventListener('input', calculatePayment);
+
+    // Form validation
+    document.getElementById('bookingForm').addEventListener('submit', function(e) {
+        const amount = parseFloat(document.getElementById('paymentAmount').value);
+        if (!amount || amount <= 0) {
+            e.preventDefault();
+            alert('Please select origin and destination to calculate payment.');
+            return false;
+        }
+    });
+</script>
